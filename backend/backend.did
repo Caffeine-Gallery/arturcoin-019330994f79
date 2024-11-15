@@ -1,0 +1,9 @@
+service : {
+  balanceOf: (principal) -> (nat) query;
+  getDecimals: () -> (nat) query;
+  getName: () -> (text) query;
+  getSymbol: () -> (text) query;
+  getTotalSupply: () -> (nat) query;
+  mint: () -> ();
+  transfer: (principal, nat) -> (bool);
+}

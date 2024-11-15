@@ -1,0 +1,49 @@
+.token-logo {
+    width: 150px;
+    height: 150px;
+    border-radius: 75px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.token-info {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.transfer-section {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.actions button {
+    min-width: 120px;
+}
+
+#spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+}
+
+.toast {
+    position: relative;
+    min-width: 250px;
+}
+
+@media (max-width: 768px) {
+    .token-logo {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .transfer-section {
+        margin: 0 10px;
+    }
+}
