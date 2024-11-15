@@ -3,6 +3,44 @@ import { Principal } from "@dfinity/principal";
 
 let userPrincipal;
 
+const LEDGER_CANISTER_ID = "ryjl3-tyaaa-aaaaa-aaaba-cai";
+
+async function connectWallet() {
+    try {
+        const publicKey = await window.ic.plug.requestConnect({
+            whitelist: [LEDGER_CANISTER_ID],
+        });
+
+        if (publicKey) {
+            const principal = await window.ic.plug.agent.getPrincipal();
+            userPrincipal = principal;
+            
+            document.getElementById('connectWalletBtn').classList.add('d-none');
+            document.getElementById('walletStatus').classList.remove('d-none');
+            document.getElementById('principalId').textContent = `Principal ID: ${principal.toString()}`;
+            
+            await refreshBalances();
+            await refreshTokenInfo();
+        }
+    } catch (error) {
+        showNotification('Failed to connect wallet: ' + error.message, 'danger');
+    }
+}
+
+async function refreshBalances() {
+    try {
+        // Get ICP balance
+        const balance = await window.ic.plug.requestBalance();
+        const icpBalance = balance.find(b => b.symbol === 'ICP');
+        if (icpBalance) {
+            document.getElementById('icpBalance').textContent = 
+                `ICP Balance: ${Number(icpBalance.amount).toFixed(4)} ICP`;
+        }
+    } catch (error) {
+        showNotification('Error fetching balances', 'danger');
+    }
+}
+
 async function refreshTokenInfo() {
     try {
         const totalSupply = await backend.getTotalSupply();
@@ -18,6 +56,11 @@ async function refreshTokenInfo() {
 }
 
 async function mint() {
+    if (!userPrincipal) {
+        showNotification('Please connect your wallet first', 'warning');
+        return;
+    }
+
     showSpinner(true);
     try {
         await backend.mint();
@@ -30,6 +73,11 @@ async function mint() {
 }
 
 async function transfer() {
+    if (!userPrincipal) {
+        showNotification('Please connect your wallet first', 'warning');
+        return;
+    }
+
     const recipientId = document.getElementById('recipientId').value;
     const amount = parseInt(document.getElementById('amount').value);
 
@@ -80,17 +128,25 @@ function showNotification(message, type) {
 }
 
 // Initialize
+document.getElementById('connectWalletBtn').onclick = connectWallet;
 document.getElementById('mintBtn').onclick = mint;
 document.getElementById('transferBtn').onclick = transfer;
 
-// Get user's principal ID when the page loads
-async function initialize() {
-    try {
-        userPrincipal = await (await window.ic?.plug?.agent?.getPrincipal()) || undefined;
-        await refreshTokenInfo();
-    } catch (error) {
-        showNotification('Error initializing application', 'danger');
+// Check if Plug wallet is installed
+window.onload = async () => {
+    if (window.ic?.plug) {
+        const connected = await window.ic.plug.isConnected();
+        if (connected) {
+            const principal = await window.ic.plug.agent.getPrincipal();
+            userPrincipal = principal;
+            document.getElementById('connectWalletBtn').classList.add('d-none');
+            document.getElementById('walletStatus').classList.remove('d-none');
+            document.getElementById('principalId').textContent = `Principal ID: ${principal.toString()}`;
+            await refreshBalances();
+            await refreshTokenInfo();
+        }
+    } else {
+        document.getElementById('connectWalletBtn').textContent = 'Please Install Plug Wallet';
+        document.getElementById('connectWalletBtn').disabled = true;
     }
-}
-
-window.onload = initialize;
+};

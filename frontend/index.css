@@ -12,6 +12,15 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
+.wallet-section {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin: 20px auto;
+    max-width: 500px;
+}
+
 .transfer-section {
     max-width: 500px;
     margin: 0 auto;
